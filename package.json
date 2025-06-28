@@ -3,15 +3,16 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "ts-node src/crypto_analysis.ts",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "dummy file",
+  "description": "Price Oracle Analysis System for cryptocurrency liquidity pools",
   "dependencies": {
     "@types/node": "^24.0.7",
-    "axios": "^1.10.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
