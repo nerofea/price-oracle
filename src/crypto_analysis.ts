@@ -320,6 +320,64 @@ function displayAverages(): void {
   console.log("");
 }
 
+// Calculate the most correct ratio by combining ratio values from calculateRatios.
+// Use a weighted average based on pool volume to prioritize larger, more reliable pools.
+// Return a single number representing the most accurate ratio for each tokenA (ETH, USDT, DAI).
+function calculateMostCorrectRatio(): Record<string, number> {
+  const ratios = calculateRatios(liquidityPools);
+  
+  // Group ratios by tokenA
+  const ratiosByToken: Record<string, RatioResult[]> = {};
+  ratios.forEach(ratio => {
+    const tokenA = ratio.pool.tokenA;
+    if (!ratiosByToken[tokenA]) {
+      ratiosByToken[tokenA] = [];
+    }
+    ratiosByToken[tokenA].push(ratio);
+  });
+  
+  // Calculate weighted average for each tokenA
+  const mostCorrectRatios: Record<string, number> = {};
+  
+  Object.entries(ratiosByToken).forEach(([tokenA, tokenRatios]) => {
+    // Calculate total volume for this token
+    const totalVolume = tokenRatios.reduce((sum, r) => sum + r.pool.volume, 0);
+    
+    // Calculate weighted average ratio
+    const weightedRatio = tokenRatios.reduce((sum, r) => {
+      const weight = r.pool.volume / totalVolume;
+      return sum + (r.ratio * weight);
+    }, 0);
+    
+    mostCorrectRatios[tokenA] = weightedRatio;
+  });
+  
+  return mostCorrectRatios;
+}
+
+// Function to display the most correct ratios
+function displayMostCorrectRatios(): void {
+  console.log("=== Most Correct Ratios (Volume-Weighted) ===\n");
+  
+  const mostCorrectRatios = calculateMostCorrectRatio();
+  const ratios = calculateRatios(liquidityPools);
+  
+  Object.entries(mostCorrectRatios).forEach(([tokenA, weightedRatio]) => {
+    console.log(`${tokenA} Pools:`);
+    
+    // Show individual ratios for this token
+    const tokenRatios = ratios.filter(r => r.pool.tokenA === tokenA);
+    tokenRatios.forEach((r, index) => {
+      const weight = (r.pool.volume / tokenRatios.reduce((sum, tr) => sum + tr.pool.volume, 0) * 100).toFixed(1);
+      console.log(`  Pool ${index + 1}: ${r.tokenPair} on ${r.pool.platform}`);
+      console.log(`    Ratio: ${r.ratio.toFixed(4)} (Weight: ${weight}%)`);
+    });
+    
+    console.log(`  🎯 Most Correct Ratio: ${weightedRatio.toFixed(4)}`);
+    console.log("");
+  });
+}
+
 // Export for use in other modules
 export { 
   LiquidityPool, 
@@ -332,7 +390,9 @@ export {
   calculateRatios,
   displayRatios,
   calculateAverages,
-  displayAverages
+  displayAverages,
+  calculateMostCorrectRatio,
+  displayMostCorrectRatios
 };
 
 // Example usage
@@ -341,6 +401,7 @@ if (require.main === module) {
   verifyPoolDistribution();
   displayRatios();
   displayAverages();
+  displayMostCorrectRatios();
   
   // Test to log the ratios
   const ratios = calculateRatios(liquidityPools);
