@@ -1,0 +1,27 @@
+{
+  "name": "price-oracle",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node src/crypto_analysis.ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Price Oracle Analysis System for cryptocurrency liquidity pools",
+  "dependencies": {
+    "@types/node": "^24.0.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Karn-bit/price-oracle.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Karn-bit/price-oracle/issues"
+  },
+  "homepage": "https://github.com/Karn-bit/price-oracle#readme"
+}
