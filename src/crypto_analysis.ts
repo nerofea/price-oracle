@@ -231,6 +231,95 @@ function displayRatios(): void {
   });
 }
 
+// Calculate 10 different types of averages for the ratios from calculateRatios.
+// Include: arithmetic mean, geometric mean, median, weighted mean by volume, harmonic mean, midrange, trimmed mean (10% trim), mode, quadratic mean, and max ratio.
+// Return an object with each average type as a key and the calculated value as a number.
+function calculateAverages(ratios: RatioResult[]): Record<string, number> {
+  const ratioValues = ratios.map(r => r.ratio);
+  const sortedRatios = [...ratioValues].sort((a, b) => a - b);
+  const n = ratioValues.length;
+  
+  // 1. Arithmetic Mean
+  const arithmeticMean = ratioValues.reduce((sum, ratio) => sum + ratio, 0) / n;
+  
+  // 2. Geometric Mean
+  const geometricMean = Math.pow(ratioValues.reduce((product, ratio) => product * ratio, 1), 1/n);
+  
+  // 3. Median
+  const median = n % 2 === 0 
+    ? (sortedRatios[n/2 - 1] + sortedRatios[n/2]) / 2 
+    : sortedRatios[Math.floor(n/2)];
+  
+  // 4. Weighted Mean by Volume
+  const totalVolume = ratios.reduce((sum, r) => sum + r.pool.volume, 0);
+  const weightedMean = ratios.reduce((sum, r) => sum + (r.ratio * r.pool.volume), 0) / totalVolume;
+  
+  // 5. Harmonic Mean
+  const harmonicMean = n / ratioValues.reduce((sum, ratio) => sum + (1 / ratio), 0);
+  
+  // 6. Midrange
+  const midrange = (Math.min(...ratioValues) + Math.max(...ratioValues)) / 2;
+  
+  // 7. Trimmed Mean (10% trim)
+  const trimCount = Math.floor(n * 0.1);
+  const trimmedRatios = sortedRatios.slice(trimCount, n - trimCount);
+  const trimmedMean = trimmedRatios.reduce((sum, ratio) => sum + ratio, 0) / trimmedRatios.length;
+  
+  // 8. Mode (most frequent value)
+  const frequencyMap = new Map<number, number>();
+  ratioValues.forEach(ratio => {
+    const rounded = Math.round(ratio * 100) / 100; // Round to 2 decimal places for grouping
+    frequencyMap.set(rounded, (frequencyMap.get(rounded) || 0) + 1);
+  });
+  let mode = ratioValues[0];
+  let maxFreq = 1;
+  frequencyMap.forEach((freq, value) => {
+    if (freq > maxFreq) {
+      maxFreq = freq;
+      mode = value;
+    }
+  });
+  
+  // 9. Quadratic Mean (Root Mean Square)
+  const quadraticMean = Math.sqrt(ratioValues.reduce((sum, ratio) => sum + ratio * ratio, 0) / n);
+  
+  // 10. Max Ratio
+  const maxRatio = Math.max(...ratioValues);
+  
+  return {
+    arithmeticMean,
+    geometricMean,
+    median,
+    weightedMean,
+    harmonicMean,
+    midrange,
+    trimmedMean,
+    mode,
+    quadraticMean,
+    maxRatio
+  };
+}
+
+// Function to display all calculated averages
+function displayAverages(): void {
+  console.log("=== 10 Types of Averages for Ratios ===\n");
+  
+  const ratios = calculateRatios(liquidityPools);
+  const averages = calculateAverages(ratios);
+  
+  console.log("1. Arithmetic Mean:", averages.arithmeticMean.toFixed(4));
+  console.log("2. Geometric Mean:", averages.geometricMean.toFixed(4));
+  console.log("3. Median:", averages.median.toFixed(4));
+  console.log("4. Weighted Mean (by Volume):", averages.weightedMean.toFixed(4));
+  console.log("5. Harmonic Mean:", averages.harmonicMean.toFixed(4));
+  console.log("6. Midrange:", averages.midrange.toFixed(4));
+  console.log("7. Trimmed Mean (10% trim):", averages.trimmedMean.toFixed(4));
+  console.log("8. Mode:", averages.mode.toFixed(4));
+  console.log("9. Quadratic Mean (RMS):", averages.quadraticMean.toFixed(4));
+  console.log("10. Max Ratio:", averages.maxRatio.toFixed(4));
+  console.log("");
+}
+
 // Export for use in other modules
 export { 
   LiquidityPool, 
@@ -241,7 +330,9 @@ export {
   getPoolsByToken, 
   verifyPoolDistribution,
   calculateRatios,
-  displayRatios
+  displayRatios,
+  calculateAverages,
+  displayAverages
 };
 
 // Example usage
@@ -249,6 +340,7 @@ if (require.main === module) {
   displayLiquidityPools();
   verifyPoolDistribution();
   displayRatios();
+  displayAverages();
   
   // Test to log the ratios
   const ratios = calculateRatios(liquidityPools);
