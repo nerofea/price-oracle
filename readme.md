@@ -43,6 +43,13 @@ The Price Oracle project is designed to analyze and compare liquidity pools acro
   - Formula: `score = 50 * hasAudit - 20 * hackHistory + platformAge`
 
 ---
+## Project Structure
+- `src/crypto_analysis.ts` — Main analysis code
+
+- `package.json` — Project dependencies and scripts
+
+- `tsconfig.json` — TypeScript configuration
+
 
 ## 🚀 Getting Started
 
