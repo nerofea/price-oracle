@@ -1,4 +1,5 @@
-# 🧠 Price Oracle for Liquidity Pool Analysis
+
+# The Price Oracle project is designed  by Beachhead Market to analyze and compare liquidity pools across"
 
 A TypeScript-based tool to analyze liquidity pools for **ETH**, **USDT**, and **DAI** across **Uniswap**, **SushiSwap**, and **Curve**.
 
